@@ -40,6 +40,17 @@ const initialData: SourcingFormData = {
 
 type FieldErrors = Partial<Record<keyof SourcingFormData, string>>;
 
+function isValidReference(value: string) {
+  if (/^[A-Z0-9]{10}$/i.test(value)) return true;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function Field({
   id,
   label,
@@ -145,6 +156,9 @@ export function SourcingRequestForm() {
     if (step === 0) {
       if (!data.productName.trim()) nextErrors.productName = "Enter a product name.";
       if (!data.productCategory) nextErrors.productCategory = "Select a product category.";
+      if (data.referenceUrl.trim() && !isValidReference(data.referenceUrl.trim())) {
+        nextErrors.referenceUrl = "Enter a 10-character ASIN or a complete http(s) URL.";
+      }
       if (data.productDescription.trim().length < 20) {
         nextErrors.productDescription = "Add at least 20 characters so the sourcing team has enough context.";
       }
@@ -159,18 +173,31 @@ export function SourcingRequestForm() {
     if (step === 2) {
       const quantity = Number(data.targetQuantity);
       const unitPrice = Number(data.targetUnitPrice);
-      if (!Number.isFinite(quantity) || quantity < 1) {
-        nextErrors.targetQuantity = "Enter a target quantity greater than zero.";
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        nextErrors.targetQuantity = "Enter a whole-number quantity greater than zero.";
       }
       if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
         nextErrors.targetUnitPrice = "Enter a target unit price greater than zero.";
       }
       if (!data.destinationCountry) nextErrors.destinationCountry = "Select a destination country.";
       if (!data.amazonMarketplace) nextErrors.amazonMarketplace = "Select a target Amazon marketplace.";
-      if (!data.desiredDeliveryDate) nextErrors.desiredDeliveryDate = "Choose a desired delivery date.";
+      if (!data.desiredDeliveryDate) {
+        nextErrors.desiredDeliveryDate = "Choose a desired delivery date.";
+      } else {
+        const selectedDate = new Date(`${data.desiredDeliveryDate}T23:59:59`);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (Number.isNaN(selectedDate.getTime()) || selectedDate < today) {
+          nextErrors.desiredDeliveryDate = "Choose today or a future delivery date.";
+        }
+      }
     }
 
     setErrors(nextErrors);
+    const firstError = Object.keys(nextErrors)[0] as keyof SourcingFormData | undefined;
+    if (firstError) {
+      window.requestAnimationFrame(() => document.getElementById(firstError)?.focus());
+    }
     return Object.keys(nextErrors).length === 0;
   };
 
@@ -196,6 +223,12 @@ export function SourcingRequestForm() {
   const handleBack = () => {
     setErrors({});
     setCurrentStep((step) => Math.max(0, step - 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleEditStep = (step: number) => {
+    setErrors({});
+    setCurrentStep(step);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -232,7 +265,7 @@ export function SourcingRequestForm() {
               <li key={step.name}>
                 <button
                   type="button"
-                  onClick={() => isComplete && setCurrentStep(index)}
+                  onClick={() => isComplete && handleEditStep(index)}
                   disabled={!isComplete}
                   aria-current={isActive ? "step" : undefined}
                   className={`flex w-full items-center gap-3 rounded-lg p-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 lg:p-3 ${
@@ -277,10 +310,10 @@ export function SourcingRequestForm() {
           {currentStep === 0 ? (
             <div className="grid gap-6 sm:grid-cols-2">
               <Field id="productName" label="Product name" required error={errors.productName}>
-                <input {...fieldProps("productName")} className="text-field" placeholder="e.g. Collapsible silicone lunch box" />
+                <input {...fieldProps("productName")} required className="text-field" placeholder="e.g. Collapsible silicone lunch box" />
               </Field>
               <Field id="productCategory" label="Product category" required error={errors.productCategory}>
-                <select {...fieldProps("productCategory")} className="text-field">
+                <select {...fieldProps("productCategory")} required className="text-field">
                   <option value="">Select a category</option>
                   <option>Home & Kitchen</option>
                   <option>Pet Supplies</option>
@@ -291,13 +324,13 @@ export function SourcingRequestForm() {
                 </select>
               </Field>
               <div className="sm:col-span-2">
-                <Field id="referenceUrl" label="Amazon ASIN or reference URL" help="Optional. Used as a visual reference only in this demo.">
+                <Field id="referenceUrl" label="Amazon ASIN or reference URL" help="Optional. Used as a visual reference only in this demo." error={errors.referenceUrl}>
                   <input {...fieldProps("referenceUrl", true)} className="text-field" placeholder="ASIN or https://example.com/product" />
                 </Field>
               </div>
               <div className="sm:col-span-2">
                 <Field id="productDescription" label="Product description" required error={errors.productDescription}>
-                  <textarea {...fieldProps("productDescription")} rows={5} className="text-field resize-y" placeholder="Describe the product, intended customer, must-have features, and acceptable alternatives." />
+                  <textarea {...fieldProps("productDescription")} required rows={5} className="text-field resize-y" placeholder="Describe the product, intended customer, must-have features, and acceptable alternatives." />
                 </Field>
               </div>
               <div className="sm:col-span-2">
@@ -317,13 +350,13 @@ export function SourcingRequestForm() {
           {currentStep === 1 ? (
             <div className="grid gap-6 sm:grid-cols-2">
               <Field id="material" label="Material" required error={errors.material}>
-                <input {...fieldProps("material")} className="text-field" placeholder="e.g. Food-grade silicone" />
+                <input {...fieldProps("material")} required className="text-field" placeholder="e.g. Food-grade silicone" />
               </Field>
               <Field id="dimensions" label="Dimensions" required error={errors.dimensions}>
-                <input {...fieldProps("dimensions")} className="text-field" placeholder="e.g. 19 × 13 × 7 cm" />
+                <input {...fieldProps("dimensions")} required className="text-field" placeholder="e.g. 19 × 13 × 7 cm" />
               </Field>
               <Field id="color" label="Color" required error={errors.color}>
-                <input {...fieldProps("color")} className="text-field" placeholder="e.g. Navy, sage, and sand" />
+                <input {...fieldProps("color")} required className="text-field" placeholder="e.g. Navy, sage, and sand" />
               </Field>
               <Field id="customLogo" label="Custom logo">
                 <select {...fieldProps("customLogo")} className="text-field">
@@ -346,25 +379,25 @@ export function SourcingRequestForm() {
           {currentStep === 2 ? (
             <div className="grid gap-6 sm:grid-cols-2">
               <Field id="targetQuantity" label="Target quantity" required error={errors.targetQuantity}>
-                <input {...fieldProps("targetQuantity")} type="number" min="1" inputMode="numeric" className="text-field" placeholder="2500" />
+                <input {...fieldProps("targetQuantity")} required type="number" min="1" step="1" inputMode="numeric" className="text-field" placeholder="2500" />
               </Field>
               <Field id="targetUnitPrice" label="Target unit price (USD)" required error={errors.targetUnitPrice}>
-                <input {...fieldProps("targetUnitPrice")} type="number" min="0.01" step="0.01" inputMode="decimal" className="text-field" placeholder="7.50" />
+                <input {...fieldProps("targetUnitPrice")} required type="number" min="0.01" step="0.01" inputMode="decimal" className="text-field" placeholder="7.50" />
               </Field>
               <Field id="destinationCountry" label="Destination country" required error={errors.destinationCountry}>
-                <select {...fieldProps("destinationCountry")} className="text-field">
+                <select {...fieldProps("destinationCountry")} required className="text-field">
                   <option value="">Select a country</option>
                   <option>United States</option><option>United Kingdom</option><option>Canada</option><option>Germany</option><option>Australia</option><option>Other</option>
                 </select>
               </Field>
               <Field id="amazonMarketplace" label="Target Amazon marketplace" required error={errors.amazonMarketplace}>
-                <select {...fieldProps("amazonMarketplace")} className="text-field">
+                <select {...fieldProps("amazonMarketplace")} required className="text-field">
                   <option value="">Select a marketplace</option>
                   <option>Amazon.com</option><option>Amazon.co.uk</option><option>Amazon.ca</option><option>Amazon.de</option><option>Amazon.com.au</option><option>Other</option>
                 </select>
               </Field>
               <Field id="desiredDeliveryDate" label="Desired delivery date" required error={errors.desiredDeliveryDate}>
-                <input {...fieldProps("desiredDeliveryDate")} type="date" className="text-field" />
+                <input {...fieldProps("desiredDeliveryDate")} required type="date" className="text-field" />
               </Field>
               <Field id="sampleRequired" label="Sample required">
                 <select {...fieldProps("sampleRequired")} className="text-field"><option>Yes</option><option>No</option><option>Not sure</option></select>
@@ -385,7 +418,7 @@ export function SourcingRequestForm() {
               <ReviewGroup
                 title="Product Basics"
                 step={0}
-                onEdit={setCurrentStep}
+                onEdit={handleEditStep}
                 rows={[
                   { label: "Product name", value: data.productName },
                   { label: "Category", value: data.productCategory },
@@ -397,7 +430,7 @@ export function SourcingRequestForm() {
               <ReviewGroup
                 title="Specifications"
                 step={1}
-                onEdit={setCurrentStep}
+                onEdit={handleEditStep}
                 rows={[
                   { label: "Material", value: data.material },
                   { label: "Dimensions", value: data.dimensions },
@@ -410,7 +443,7 @@ export function SourcingRequestForm() {
               <ReviewGroup
                 title="Commercial Requirements"
                 step={2}
-                onEdit={setCurrentStep}
+                onEdit={handleEditStep}
                 rows={[
                   { label: "Target quantity", value: data.targetQuantity },
                   { label: "Target unit price", value: data.targetUnitPrice ? `$${data.targetUnitPrice}` : "" },

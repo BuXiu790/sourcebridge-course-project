@@ -39,6 +39,13 @@ test("server-renders every SourceBridge route", async () => {
     const html = await response.text();
     assert.match(html, /SourceBridge/);
     assert.ok(html.includes(expectedText), `${pathname} should include ${expectedText}`);
+
+    if (pathname === "/") assert.match(html, /href="\/#workflow"/);
+    if (pathname === "/dashboard") assert.match(html, /href="\/rfqs\/demo-001"/);
+    if (pathname === "/rfqs/demo-001") {
+      assert.match(html, /Estimates only\./);
+      assert.match(html, /Actual Amazon fees, freight, duties and other costs may vary\./);
+    }
   }
 });
 

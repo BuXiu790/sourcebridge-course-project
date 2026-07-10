@@ -22,7 +22,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 sm:px-6 lg:px-8">
         <Brand />
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
-          <Link className="nav-link" href="/">
+          <Link className="nav-link" href="/#workflow">
             How it works
           </Link>
           <Link className="nav-link" href="/#capabilities">
@@ -40,4 +40,3 @@ export function SiteHeader() {
     </header>
   );
 }
-

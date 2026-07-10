@@ -97,7 +97,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-white py-20 sm:py-24">
+        <section id="workflow" className="scroll-mt-20 bg-white py-20 sm:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="A clearer path to purchase"
@@ -220,4 +220,3 @@ export default function Home() {
     </div>
   );
 }
-

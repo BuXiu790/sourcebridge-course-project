@@ -30,7 +30,7 @@ npm run start
 
 - Responsive marketing homepage with workflow, capabilities, buyer value, and clearly labeled demo metrics
 - Buyer dashboard with summary cards, five demo RFQs, status filtering, responsive list/table views, and RFQ navigation
-- Four-step sourcing request form with accessible labels, front-end validation, demo file selection, review/edit controls, success confirmation, and redirect
+- Four-step sourcing request form with accessible required-field semantics, ASIN/URL and commercial input validation, focused error feedback, demo file selection, review/edit controls, success confirmation, and redirect
 - RFQ detail experience with status, full timeline, specifications, attachments, two anonymized supplier quotes, quote selection, and an interactive cost/profit estimate
 - Shared layout, button, status, loading, empty, and error components
 - App Router metadata and a SourceBridge social preview image
