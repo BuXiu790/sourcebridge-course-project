@@ -86,11 +86,11 @@ export default function Home() {
                   Submit a Sourcing Request <span aria-hidden="true">→</span>
                 </ButtonLink>
                 <ButtonLink href="/dashboard" variant="secondary" className="px-5">
-                  View Demo Dashboard
+                  Open Buyer Dashboard
                 </ButtonLink>
               </div>
               <p className="mt-4 text-xs leading-5 text-slate-500">
-                Frontend demo only — no account or payment required.
+                Sign-in required for the private workspace — no payment is processed.
               </p>
             </div>
             <HeroPreview />

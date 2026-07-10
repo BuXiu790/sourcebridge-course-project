@@ -8,6 +8,7 @@ import type {
 export const rfqs: RfqSummary[] = [
   {
     id: "demo-001",
+    rfqNumber: "DEMO-001",
     productName: "Foldable Fabric Storage Organizer Set",
     targetMarket: "Amazon US",
     quantity: 2_500,
@@ -18,6 +19,7 @@ export const rfqs: RfqSummary[] = [
   },
   {
     id: "demo-002",
+    rfqNumber: "DEMO-002",
     productName: "Bamboo Drawer Organizer",
     targetMarket: "Amazon UK",
     quantity: 1_200,
@@ -28,6 +30,7 @@ export const rfqs: RfqSummary[] = [
   },
   {
     id: "demo-003",
+    rfqNumber: "DEMO-003",
     productName: "Portable Pet Water Bottle",
     targetMarket: "Amazon DE",
     quantity: 3_000,
@@ -38,6 +41,7 @@ export const rfqs: RfqSummary[] = [
   },
   {
     id: "demo-004",
+    rfqNumber: "DEMO-004",
     productName: "Travel Compression Packing Cubes",
     targetMarket: "Amazon CA",
     quantity: 1_500,
@@ -48,6 +52,7 @@ export const rfqs: RfqSummary[] = [
   },
   {
     id: "demo-005",
+    rfqNumber: "DEMO-005",
     productName: "Magnetic Cable Management Kit",
     targetMarket: "Amazon US",
     quantity: 2_000,

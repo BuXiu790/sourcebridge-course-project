@@ -25,13 +25,13 @@ export function SiteFooter() {
         <div>
           <p className="text-sm font-semibold text-slate-900">Prototype note</p>
           <p className="mt-3 text-sm leading-6 text-slate-600">
-            This MVP uses illustrative demo data only. No orders, payments, or
-            supplier records are created.
+            Homepage targets and the RFQ preview are illustrative. Authenticated
+            records come from the configured Supabase project.
           </p>
         </div>
       </div>
       <div className="border-t border-slate-100 px-4 py-5 text-center text-xs leading-5 text-slate-500">
-        <p>© 2026 SourceBridge. Frontend MVP demonstration.</p>
+        <p>© 2026 SourceBridge. Sourcing workflow prototype.</p>
         <p className="mt-1">
           SourceBridge is an independent sourcing workflow prototype and is not affiliated with or endorsed by Amazon.
         </p>

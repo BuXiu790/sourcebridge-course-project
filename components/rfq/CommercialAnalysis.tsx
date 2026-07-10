@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { EmptyState, ErrorAlert } from "@/components/ui/States";
 import type { CostItem, SupplierQuote } from "@/lib/types";
 
 const currency = new Intl.NumberFormat("en-US", {
@@ -14,10 +15,12 @@ function QuoteCard({
   quote,
   selected,
   onSelect,
+  disabled,
 }: {
   quote: SupplierQuote;
   selected: boolean;
   onSelect: (id: string) => void;
+  disabled?: boolean;
 }) {
   const rows = [
     { label: "Unit price", value: currency.format(quote.unitPrice) },
@@ -35,7 +38,7 @@ function QuoteCard({
     >
       {quote.recommended ? (
         <div className="bg-blue-600 px-5 py-2 text-center text-xs font-bold uppercase tracking-[0.14em] text-white">
-          Recommended for demo
+          Recommended option
         </div>
       ) : null}
       <div className="p-5 sm:p-6">
@@ -64,6 +67,7 @@ function QuoteCard({
         </div>
         <Button
           onClick={() => onSelect(quote.id)}
+          disabled={disabled}
           variant={selected ? "secondary" : "primary"}
           className="mt-5 w-full"
           aria-pressed={selected}
@@ -160,15 +164,45 @@ function CostEstimate({
 
 export function CommercialAnalysis({
   quotes,
-  costItems,
+  costItems = [],
   quantity,
+  rfqId,
+  initialSelectedQuoteId,
 }: {
   quotes: SupplierQuote[];
-  costItems: CostItem[];
+  costItems?: CostItem[];
   quantity: number;
+  rfqId?: string;
+  initialSelectedQuoteId?: string | null;
 }) {
-  const [selectedQuoteId, setSelectedQuoteId] = useState<string>();
+  const [selectedQuoteId, setSelectedQuoteId] = useState<string | undefined>(initialSelectedQuoteId ?? undefined);
+  const [isSavingQuote, setIsSavingQuote] = useState(false);
+  const [selectionError, setSelectionError] = useState<string>();
   const selectedQuote = quotes.find((quote) => quote.id === selectedQuoteId);
+
+  async function handleSelectQuote(quoteId: string) {
+    setSelectionError(undefined);
+    if (!rfqId) {
+      setSelectedQuoteId(quoteId);
+      return;
+    }
+
+    setIsSavingQuote(true);
+    try {
+      const response = await fetch(`/api/rfqs/${rfqId}/select-quote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quoteId }),
+      });
+      const result = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(result.error || "The quote selection could not be saved.");
+      setSelectedQuoteId(quoteId);
+    } catch (error) {
+      setSelectionError(error instanceof Error ? error.message : "The quote selection could not be saved.");
+    } finally {
+      setIsSavingQuote(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -182,32 +216,48 @@ export function CommercialAnalysis({
             Supplier names are anonymized in this prototype view. Supplier details are disclosed before sampling or purchase, after both parties confirm the sourcing terms.
           </p>
         </div>
-        <div className="grid gap-5 lg:grid-cols-2">
-          {quotes.map((quote) => (
-            <QuoteCard
-              key={quote.id}
-              quote={quote}
-              selected={quote.id === selectedQuoteId}
-              onSelect={setSelectedQuoteId}
-            />
-          ))}
-        </div>
+        {quotes.length ? (
+          <div className="grid gap-5 lg:grid-cols-2">
+            {quotes.map((quote) => (
+              <QuoteCard
+                key={quote.id}
+                quote={quote}
+                selected={quote.id === selectedQuoteId}
+                onSelect={(quoteId) => void handleSelectQuote(quoteId)}
+                disabled={isSavingQuote}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No comparable quotes yet"
+            description="The sourcing team has not published a supplier quote for this RFQ."
+          />
+        )}
         <div className="min-h-12" aria-live="polite">
-          {selectedQuote ? (
+          {selectionError ? <div className="mt-4"><ErrorAlert message={selectionError} /></div> : selectedQuote ? (
             <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              <strong>{selectedQuote.supplierId}</strong> is selected for this demo. The cost model below now uses its unit price. No order has been placed.
+              <strong>{selectedQuote.supplierId}</strong> is selected for this RFQ. This records a sourcing preference; no order has been placed.
             </p>
-          ) : (
-            <p className="mt-4 text-xs text-slate-500">Select a quote to update the demo cost model.</p>
-          )}
+          ) : quotes.length ? (
+            <p className="mt-4 text-xs text-slate-500">Select a quote to record your sourcing preference.</p>
+          ) : null}
         </div>
       </section>
 
-      <CostEstimate
-        costItems={costItems}
-        selectedQuote={selectedQuote}
-        quantity={quantity}
-      />
+      {costItems.length ? (
+        <CostEstimate costItems={costItems} selectedQuote={selectedQuote} quantity={quantity} />
+      ) : (
+        <section className="panel p-5 sm:p-6" aria-labelledby="cost-heading">
+          <h2 id="cost-heading" className="text-xl font-bold text-slate-950">Cost & profit estimate</h2>
+          <div className="mt-5">
+            <EmptyState
+              title="Cost model not configured"
+              description="Real RFQs do not inherit public demo assumptions. A cost model will appear after selling-price, fee, freight, duty, and allowance inputs are recorded for this request."
+            />
+          </div>
+        </section>
+      )}
     </div>
   );
 }

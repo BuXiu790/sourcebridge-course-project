@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { Button } from "@/components/ui/Button";
+import { ErrorAlert } from "@/components/ui/States";
 import type { SourcingFormData } from "@/lib/types";
 
 const steps = [
@@ -126,6 +127,8 @@ export function SourcingRequestForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string>();
+  const [submittedNumber, setSubmittedNumber] = useState<string>();
 
   const updateField = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -205,35 +208,48 @@ export function SourcingRequestForm() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSubmitError(undefined);
 
     if (currentStep < steps.length - 1) {
       if (validateStep(currentStep)) {
         setCurrentStep((step) => step + 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0 });
       }
       return;
     }
 
     setIsSubmitting(true);
-    window.setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/rfqs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = (await response.json()) as { id?: string; rfqNumber?: string; error?: string };
+      if (!response.ok || !result.id) throw new Error(result.error || "The request could not be saved.");
+
+      setSubmittedNumber(result.rfqNumber);
       setIsSubmitted(true);
-      window.setTimeout(() => router.push("/rfqs/demo-001?submitted=true"), 900);
-    }, 700);
+      window.setTimeout(() => router.push(`/rfqs/${result.id}?submitted=true`), 600);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "The request could not be saved.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {
     setErrors({});
     setCurrentStep((step) => Math.max(0, step - 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   };
 
   const handleEditStep = (step: number) => {
     setErrors({});
     setCurrentStep(step);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +268,7 @@ export function SourcingRequestForm() {
         </div>
         <h2 className="mt-5 text-2xl font-bold text-slate-950">Request submitted</h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">
-          Your demo request is ready. We are taking you to RFQ #DEMO-001 now.
+          {submittedNumber ? `${submittedNumber} was saved to your private workspace.` : "Your request was saved."} We are opening it now.
         </p>
       </div>
     );
@@ -302,6 +318,7 @@ export function SourcingRequestForm() {
       </aside>
 
       <form onSubmit={handleSubmit} noValidate className="panel overflow-hidden">
+        {submitError ? <div className="px-5 pt-5 sm:px-7"><ErrorAlert message={submitError} /></div> : null}
         <div className="border-b border-slate-200 px-5 py-5 sm:px-7 sm:py-6">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
             Step {currentStep + 1} of {steps.length}
@@ -417,7 +434,7 @@ export function SourcingRequestForm() {
           {currentStep === 3 ? (
             <div className="space-y-5">
               <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
-                Review your request before submitting. This prototype will not save or transmit the information.
+                Review your request before submitting. It will be saved to your private SourceBridge workspace.
               </div>
               <ReviewGroup
                 title="Product Basics"
@@ -468,7 +485,7 @@ export function SourcingRequestForm() {
           </Button>
           <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
             <p className="text-center text-xs text-slate-500 sm:text-right">
-              {currentStep === 3 ? "Demo submission — no data is sent" : "Required fields are marked *"}
+              {currentStep === 3 ? "Secure account submission" : "Required fields are marked *"}
             </p>
             <Button type="submit" disabled={isSubmitting} className="sm:min-w-36">
               {isSubmitting ? "Submitting…" : currentStep === 3 ? "Submit Request" : "Continue"}

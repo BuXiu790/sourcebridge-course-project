@@ -2,16 +2,23 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SourcingRequestForm } from "@/components/rfq/SourcingRequestForm";
+import { requireUser } from "@/lib/auth";
+import { getSupabasePublicConfig } from "@/lib/supabase/config";
 
 export const metadata: Metadata = {
   title: "New Sourcing Request",
-  description: "Create a new demo sourcing request for products from China.",
+  description: "Create a sourcing request for products from China.",
 };
 
-export default function NewRfqPage() {
+export const dynamic = "force-dynamic";
+
+export default async function NewRfqPage() {
+  const auth = await requireUser("/rfqs/new");
+  const config = getSupabasePublicConfig();
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
+      <SiteHeader account={{ email: auth.profile.email, role: auth.profile.role, config }} />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-7 max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">New sourcing request</p>
@@ -28,4 +35,3 @@ export default function NewRfqPage() {
     </div>
   );
 }
-

@@ -2,14 +2,18 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render(pathname = "/") {
+async function request(pathname = "/", init = {}) {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${pathname}`);
+  workerUrl.searchParams.set(
+    "test",
+    `${process.pid}-${Date.now()}-${Math.random()}-${pathname}`,
+  );
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
     new Request(`http://localhost${pathname}`, {
-      headers: { accept: "text/html" },
+      headers: { accept: "text/html", ...init.headers },
+      ...init,
     }),
     {
       ASSETS: {
@@ -23,16 +27,16 @@ async function render(pathname = "/") {
   );
 }
 
-test("server-renders every SourceBridge route", async () => {
+test("server-renders the public SourceBridge routes", async () => {
   const routes = [
     ["/", "Source Smarter from China"],
-    ["/dashboard", "Sourcing requests"],
-    ["/rfqs/new", "Tell us what you need to source"],
-    ["/rfqs/demo-001", "Comparable quotes"],
+    ["/login", "Sign in to SourceBridge"],
+    ["/signup", "Create your SourceBridge account"],
+    ["/forgot-password", "Reset your password"],
   ];
 
   for (const [pathname, expectedText] of routes) {
-    const response = await render(pathname);
+    const response = await request(pathname);
     assert.equal(response.status, 200, pathname);
     assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
@@ -45,16 +49,46 @@ test("server-renders every SourceBridge route", async () => {
       assert.match(html, /href="\/#workflow"/);
       assert.match(html, /Prototype Service Targets/);
       assert.match(html, /not actual operating results/);
-    }
-    if (pathname === "/dashboard") assert.match(html, /href="\/rfqs\/demo-001"/);
-    if (pathname === "/rfqs/new") assert.match(html, /Select a category/);
-    if (pathname === "/rfqs/demo-001") {
-      assert.match(html, /Foldable Fabric Storage Organizer Set/);
-      assert.match(html, /Home &amp; Storage/);
-      assert.match(html, /Estimates only\./);
-      assert.match(html, /Actual Amazon fees, freight, duties and other costs may vary\./);
+    } else {
+      assert.match(html, /Supabase configuration required/);
     }
   }
+});
+
+test("redirects protected pages to login when Supabase is not configured", async () => {
+  const paths = [
+    "/dashboard",
+    "/rfqs/new",
+    "/rfqs/00000000-0000-4000-8000-000000000001",
+    "/reset-password",
+    "/admin",
+    "/admin/rfqs",
+    "/admin/rfqs/00000000-0000-4000-8000-000000000001",
+    "/admin/suppliers",
+    "/admin/quotes",
+  ];
+
+  for (const pathname of paths) {
+    const response = await request(pathname);
+    assert.equal(response.status, 307, pathname);
+    const location = new URL(response.headers.get("location"));
+    assert.equal(location.pathname, "/login");
+    assert.equal(location.searchParams.get("next"), pathname);
+    assert.equal(location.searchParams.get("error"), "config");
+    assert.match(response.headers.get("cache-control") ?? "", /no-store/);
+  }
+});
+
+test("rejects protected API writes when Supabase is not configured", async () => {
+  const response = await request("/api/rfqs", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ productName: "Test" }),
+  });
+
+  assert.equal(response.status, 503);
+  assert.match(response.headers.get("cache-control") ?? "", /no-store/);
+  assert.deepEqual(await response.json(), { error: "Supabase is not configured." });
 });
 
 test("removes starter preview code and metadata", async () => {

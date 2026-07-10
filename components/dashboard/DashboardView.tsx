@@ -80,7 +80,7 @@ export function DashboardView({ rfqs }: { rfqs: RfqSummary[] }) {
                         href={`/rfqs/${rfq.id}`}
                         className="rounded-sm hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
-                        {rfq.id}
+                        {rfq.rfqNumber}
                       </Link>
                     </td>
                     <td className="max-w-xs px-4 py-4">
@@ -111,7 +111,7 @@ export function DashboardView({ rfqs }: { rfqs: RfqSummary[] }) {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-xs font-semibold uppercase text-blue-700">{rfq.id}</p>
+                    <p className="font-mono text-xs font-semibold uppercase text-blue-700">{rfq.rfqNumber}</p>
                     <h3 className="mt-1.5 font-semibold text-slate-950">{rfq.productName}</h3>
                   </div>
                   <span className="text-slate-400" aria-hidden="true">→</span>
@@ -131,4 +131,3 @@ export function DashboardView({ rfqs }: { rfqs: RfqSummary[] }) {
     </section>
   );
 }
-
