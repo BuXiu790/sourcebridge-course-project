@@ -1,0 +1,6 @@
+import { LoadingState } from "@/components/ui/States";
+
+export default function RfqLoading() {
+  return <LoadingState label="Loading sourcing request" />;
+}
+
