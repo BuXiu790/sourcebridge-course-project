@@ -12,8 +12,8 @@ const workflow = [
   },
   {
     step: "02",
-    title: "Compare Verified Quotes",
-    description: "Review normalized offers from export-ready suppliers side by side.",
+    title: "Review Comparable Quotes",
+    description: "Review normalized offers from sourced suppliers side by side.",
   },
   {
     step: "03",
@@ -32,7 +32,7 @@ const capabilities = [
     number: "01",
     title: "Supplier Sourcing",
     description:
-      "Turn one clear brief into comparable quotes from suppliers matched to your product and market needs.",
+      "Turn one clear brief into comparable quotes from suppliers with relevant manufacturing capabilities.",
   },
   {
     number: "02",
@@ -56,7 +56,7 @@ const capabilities = [
 
 const buyerValues = [
   "One structured workflow from product brief to delivery",
-  "Supplier identities protected until the process is ready",
+  "Supplier details are disclosed before sampling or purchase, after both parties confirm the sourcing terms.",
   "Comparable commercial terms instead of mismatched quote sheets",
   "Clear assumptions behind landed cost and margin estimates",
 ];
@@ -68,12 +68,12 @@ export default function Home() {
       <main>
         <section className="relative overflow-hidden border-b border-slate-200 bg-slate-50">
           <div className="absolute inset-x-0 top-0 h-1 bg-blue-600" />
-          <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-[1.04fr_.96fr] lg:px-8 lg:py-28">
+          <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,.9fr)_minmax(520px,1.1fr)] lg:gap-10 lg:px-8 lg:py-20 xl:gap-14">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-blue-700">
                 China sourcing, made operational
               </div>
-              <h1 className="mt-7 max-w-3xl text-5xl font-bold leading-[1.04] tracking-[-0.045em] text-slate-950 sm:text-6xl lg:text-7xl">
+              <h1 className="mt-7 max-w-3xl text-5xl font-bold leading-[1.04] tracking-[-0.045em] text-slate-950 sm:text-6xl">
                 Source Smarter <span className="text-blue-600">from China</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
@@ -176,12 +176,14 @@ export default function Home() {
               <div className="flex items-center justify-between border-b border-blue-200 px-6 py-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">
-                    Demo metrics
+                    Prototype Service Targets
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">Illustrative data, not operating results</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Illustrative targets for this prototype, not actual operating results
+                  </p>
                 </div>
                 <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-blue-700 ring-1 ring-blue-200">
-                  DEMO
+                  PROTOTYPE
                 </span>
               </div>
               <div className="grid divide-y divide-blue-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">

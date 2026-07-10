@@ -176,9 +176,11 @@ export function CommercialAnalysis({
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">Supplier comparison</p>
-            <h2 id="quotes-heading" className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Verified quotes</h2>
+            <h2 id="quotes-heading" className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Comparable quotes</h2>
           </div>
-          <p className="text-sm text-slate-500">Supplier company names are withheld in this buyer view.</p>
+          <p className="max-w-xl text-sm leading-6 text-slate-500">
+            Supplier names are anonymized in this prototype view. Supplier details are disclosed before sampling or purchase, after both parties confirm the sourcing terms.
+          </p>
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           {quotes.map((quote) => (
@@ -209,4 +211,3 @@ export function CommercialAnalysis({
     </div>
   );
 }
-

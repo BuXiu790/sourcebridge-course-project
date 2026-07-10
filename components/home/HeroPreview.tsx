@@ -1,8 +1,8 @@
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
 const quoteRows = [
-  { id: "CN-SUP-0427", price: "$7.85", lead: "28–32 days" },
-  { id: "CN-SUP-1183", price: "$8.10", lead: "24–29 days" },
+  { id: "CN-SUP-0427", price: "$6.40", lead: "22–26 days" },
+  { id: "CN-SUP-1183", price: "$6.68", lead: "18–23 days" },
 ];
 
 export function HeroPreview() {
@@ -10,13 +10,13 @@ export function HeroPreview() {
     <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
       <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-blue-100/60" />
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <div className="flex flex-col items-start gap-3 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               RFQ #DEMO-001
             </p>
             <p className="mt-1 font-semibold text-slate-950">
-              Collapsible Silicone Lunch Box Set
+              Foldable Fabric Storage Organizer Set
             </p>
           </div>
           <StatusBadge status="Quotes Ready" />
@@ -32,7 +32,7 @@ export function HeroPreview() {
           </div>
           <div className="metric-card">
             <p className="metric-label">Quotes received</p>
-            <p className="metric-value">2 verified</p>
+            <p className="metric-value">2 comparable</p>
           </div>
         </div>
         <div className="border-t border-slate-100 px-5 py-4">
@@ -67,4 +67,3 @@ export function HeroPreview() {
     </div>
   );
 }
-

@@ -13,18 +13,19 @@ export const metadata: Metadata = {
 };
 
 const specs = [
-  { label: "Material", value: "Food-grade silicone + PP lid" },
-  { label: "Dimensions", value: "19 × 13 × 7 cm expanded" },
-  { label: "Colors", value: "Navy, sage, and sand" },
-  { label: "Custom logo", value: "Debossed on lid" },
-  { label: "Custom packaging", value: "Recyclable kraft sleeve" },
-  { label: "Compliance", value: "FDA/LFGB food-contact test reports requested" },
+  { label: "Category", value: "Home & Storage" },
+  { label: "Material", value: "600D recycled polyester + 2 mm PE support board" },
+  { label: "Dimensions", value: "Large, medium, and small — flat-packed as one set" },
+  { label: "Colors", value: "Charcoal, warm gray, and navy" },
+  { label: "Custom logo", value: "Woven side label" },
+  { label: "Custom packaging", value: "Recycled polybag with paper belly band" },
+  { label: "Requirements", value: "Reinforced handles, removable boards, and export carton marks" },
 ];
 
 const attachments = [
-  { name: "product-reference.jpg", meta: "Reference image · 1.8 MB" },
-  { name: "packaging-brief.pdf", meta: "Packaging requirements · 640 KB" },
-  { name: "logo-guidelines.pdf", meta: "Brand artwork reference · 2.1 MB" },
+  { name: "organizer-set-reference.jpg", meta: "Reference image · 1.8 MB" },
+  { name: "size-specification.pdf", meta: "Dimensions and construction · 640 KB" },
+  { name: "packaging-layout.pdf", meta: "Flat-pack layout · 1.2 MB" },
 ];
 
 export default async function RfqDetailPage({
@@ -68,7 +69,7 @@ export default async function RfqDetailPage({
               ["Target quantity", `${rfq.quantity.toLocaleString("en-US")} units`],
               ["Target market", rfq.targetMarket],
               ["Created", rfq.createdAt],
-              ["Quotes received", `${rfq.quoteCount} verified quotes`],
+              ["Quotes received", `${rfq.quoteCount} comparable quotes`],
             ].map(([label, value], index) => (
               <div key={label} className={`px-5 py-4 sm:px-6 ${index > 0 ? "sm:border-l sm:border-slate-200" : ""}`}>
                 <dt className="text-xs font-medium text-slate-500">{label}</dt>
@@ -135,4 +136,3 @@ export default async function RfqDetailPage({
     </div>
   );
 }
-

@@ -8,13 +8,13 @@ import type {
 export const rfqs: RfqSummary[] = [
   {
     id: "demo-001",
-    productName: "Collapsible Silicone Lunch Box Set",
+    productName: "Foldable Fabric Storage Organizer Set",
     targetMarket: "Amazon US",
     quantity: 2_500,
     status: "Quotes Ready",
     createdAt: "Jul 2, 2026",
     quoteCount: 2,
-    estimatedValue: 19_625,
+    estimatedValue: 16_000,
   },
   {
     id: "demo-002",
@@ -62,25 +62,25 @@ export const supplierQuotes: SupplierQuote[] = [
   {
     id: "quote-a",
     supplierId: "CN-SUP-0427",
-    unitPrice: 7.85,
-    moq: 1_000,
-    sampleCost: 48,
-    leadTime: "28–32 days",
-    packaging: "Recyclable kraft sleeve + 5-ply export carton",
+    unitPrice: 6.4,
+    moq: 800,
+    sampleCost: 42,
+    leadTime: "22–26 days",
+    packaging: "Flat-packed recycled polybag + 5-ply export carton",
     notes:
-      "Logo mold is included at 2,500 units. Pantone color matching available after sample approval.",
+      "Three organizer sizes, reinforced handles, and removable support boards are included in the unit price.",
     recommended: true,
   },
   {
     id: "quote-b",
     supplierId: "CN-SUP-1183",
-    unitPrice: 8.1,
-    moq: 800,
-    sampleCost: 35,
-    leadTime: "24–29 days",
-    packaging: "Printed color box + 5-ply export carton",
+    unitPrice: 6.68,
+    moq: 600,
+    sampleCost: 30,
+    leadTime: "18–23 days",
+    packaging: "Paper belly band + recycled polybag + export carton",
     notes:
-      "Shorter lead time and lower MOQ. Custom insert adds $0.18 per unit.",
+      "Lower MOQ and shorter lead time. A heavier 900D fabric option adds $0.22 per set.",
   },
 ];
 
@@ -93,7 +93,7 @@ export const timeline: TimelineEvent[] = [
   },
   {
     label: "Supplier Sourcing",
-    detail: "Supplier capability and export readiness reviewed.",
+    detail: "Initial manufacturing capability and commercial terms reviewed.",
     date: "Jul 3–6",
     state: "complete",
   },
@@ -131,18 +131,18 @@ export const timeline: TimelineEvent[] = [
 ];
 
 export const costItems: CostItem[] = [
-  { label: "Estimated Amazon selling price", amount: 34.99, kind: "revenue" },
-  { label: "Amazon referral fee", amount: 5.25, kind: "cost" },
-  { label: "Estimated FBA fee", amount: 4.6, kind: "cost" },
-  { label: "Product cost", amount: 7.85, kind: "cost" },
-  { label: "Packaging and labeling", amount: 0.62, kind: "cost" },
-  { label: "Domestic shipping", amount: 0.28, kind: "cost" },
-  { label: "International freight", amount: 1.75, kind: "cost" },
-  { label: "Duty and tax estimate", amount: 0.59, kind: "cost" },
-  { label: "Advertising allowance", amount: 3.5, kind: "cost" },
-  { label: "Returns and defect allowance", amount: 0.7, kind: "cost" },
-  { label: "SourceBridge service fee", amount: 0.65, kind: "cost" },
-  { label: "Estimated profit", amount: 9.2, kind: "profit" },
+  { label: "Estimated Amazon selling price", amount: 29.99, kind: "revenue" },
+  { label: "Amazon referral fee", amount: 4.5, kind: "cost" },
+  { label: "Estimated FBA fee", amount: 5.18, kind: "cost" },
+  { label: "Product cost", amount: 6.4, kind: "cost" },
+  { label: "Packaging and labeling", amount: 0.48, kind: "cost" },
+  { label: "Domestic shipping", amount: 0.32, kind: "cost" },
+  { label: "International freight", amount: 1.95, kind: "cost" },
+  { label: "Duty and tax estimate", amount: 0.45, kind: "cost" },
+  { label: "Advertising allowance", amount: 3, kind: "cost" },
+  { label: "Returns and defect allowance", amount: 0.6, kind: "cost" },
+  { label: "SourceBridge service fee", amount: 0.55, kind: "cost" },
+  { label: "Estimated profit", amount: 6.56, kind: "profit" },
 ];
 
 export const dashboardStats = [
@@ -151,8 +151,7 @@ export const dashboardStats = [
   { label: "In Production", value: "1", note: "On schedule" },
   {
     label: "Total Estimated Order Value",
-    value: "$82,450",
+    value: "$78,825",
     note: "Across active RFQs",
   },
 ];
-

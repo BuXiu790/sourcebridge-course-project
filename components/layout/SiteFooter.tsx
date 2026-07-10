@@ -30,8 +30,11 @@ export function SiteFooter() {
           </p>
         </div>
       </div>
-      <div className="border-t border-slate-100 px-4 py-5 text-center text-xs text-slate-500">
-        © 2026 SourceBridge. Frontend MVP demonstration.
+      <div className="border-t border-slate-100 px-4 py-5 text-center text-xs leading-5 text-slate-500">
+        <p>© 2026 SourceBridge. Frontend MVP demonstration.</p>
+        <p className="mt-1">
+          SourceBridge is an independent sourcing workflow prototype and is not affiliated with or endorsed by Amazon.
+        </p>
       </div>
     </footer>
   );

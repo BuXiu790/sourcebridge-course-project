@@ -28,7 +28,7 @@ npm run start
 
 ## Implemented in this MVP
 
-- Responsive marketing homepage with workflow, capabilities, buyer value, and clearly labeled demo metrics
+- Responsive marketing homepage with workflow, capabilities, buyer value, and clearly labeled prototype service targets
 - Buyer dashboard with summary cards, five demo RFQs, status filtering, responsive list/table views, and RFQ navigation
 - Four-step sourcing request form with accessible required-field semantics, ASIN/URL and commercial input validation, focused error feedback, demo file selection, review/edit controls, success confirmation, and redirect
 - RFQ detail experience with status, full timeline, specifications, attachments, two anonymized supplier quotes, quote selection, and an interactive cost/profit estimate
@@ -37,7 +37,9 @@ npm run start
 
 ## Demo data and limitations
 
-All RFQs, supplier IDs, quotes, fees, costs, dates, and profitability values are illustrative mock data. The application does not create real accounts, save form submissions, upload files, place orders, process payments, call Amazon, scrape websites, or connect to third-party services.
+All RFQs, supplier IDs, quotes, service targets, fees, costs, dates, and profitability values are illustrative mock data. Comparable quotes do not represent formally verified suppliers. The application does not create real accounts, save form submissions, upload files, place orders, process payments, call Amazon, scrape websites, or connect to third-party services.
+
+SourceBridge is an independent sourcing workflow prototype and is not affiliated with or endorsed by Amazon.
 
 The dynamic RFQ route reuses the same detailed demo specification and quote set for prototype purposes. Refreshing the page resets all form and quote-selection state.
 

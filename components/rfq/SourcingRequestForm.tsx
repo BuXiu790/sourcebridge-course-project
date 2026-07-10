@@ -196,7 +196,11 @@ export function SourcingRequestForm() {
     setErrors(nextErrors);
     const firstError = Object.keys(nextErrors)[0] as keyof SourcingFormData | undefined;
     if (firstError) {
-      window.requestAnimationFrame(() => document.getElementById(firstError)?.focus());
+      window.requestAnimationFrame(() => {
+        const field = document.getElementById(firstError);
+        field?.focus({ preventScroll: true });
+        field?.scrollIntoView({ block: "center" });
+      });
     }
     return Object.keys(nextErrors).length === 0;
   };
@@ -310,12 +314,12 @@ export function SourcingRequestForm() {
           {currentStep === 0 ? (
             <div className="grid gap-6 sm:grid-cols-2">
               <Field id="productName" label="Product name" required error={errors.productName}>
-                <input {...fieldProps("productName")} required className="text-field" placeholder="e.g. Collapsible silicone lunch box" />
+                <input {...fieldProps("productName")} required className="text-field" placeholder="e.g. Foldable fabric storage organizer set" />
               </Field>
               <Field id="productCategory" label="Product category" required error={errors.productCategory}>
                 <select {...fieldProps("productCategory")} required className="text-field">
-                  <option value="">Select a category</option>
-                  <option>Home & Kitchen</option>
+                  <option value="" disabled>Select a category</option>
+                  <option>Home & Storage</option>
                   <option>Pet Supplies</option>
                   <option>Sports & Outdoors</option>
                   <option>Beauty & Personal Care</option>
@@ -350,13 +354,13 @@ export function SourcingRequestForm() {
           {currentStep === 1 ? (
             <div className="grid gap-6 sm:grid-cols-2">
               <Field id="material" label="Material" required error={errors.material}>
-                <input {...fieldProps("material")} required className="text-field" placeholder="e.g. Food-grade silicone" />
+                <input {...fieldProps("material")} required className="text-field" placeholder="e.g. 600D polyester with PE support board" />
               </Field>
               <Field id="dimensions" label="Dimensions" required error={errors.dimensions}>
-                <input {...fieldProps("dimensions")} required className="text-field" placeholder="e.g. 19 × 13 × 7 cm" />
+                <input {...fieldProps("dimensions")} required className="text-field" placeholder="e.g. 40 × 30 × 25 cm" />
               </Field>
               <Field id="color" label="Color" required error={errors.color}>
-                <input {...fieldProps("color")} required className="text-field" placeholder="e.g. Navy, sage, and sand" />
+                <input {...fieldProps("color")} required className="text-field" placeholder="e.g. Charcoal, warm gray, and navy" />
               </Field>
               <Field id="customLogo" label="Custom logo">
                 <select {...fieldProps("customLogo")} className="text-field">
@@ -370,7 +374,7 @@ export function SourcingRequestForm() {
               </Field>
               <div className="sm:col-span-2">
                 <Field id="additionalRequirements" label="Additional requirements" help="Optional. Include certifications, compliance, labeling, or testing needs.">
-                  <textarea {...fieldProps("additionalRequirements", true)} rows={5} className="text-field resize-y" placeholder="e.g. BPA-free test report, FNSKU labeling, drop-test standard..." />
+                  <textarea {...fieldProps("additionalRequirements", true)} rows={5} className="text-field resize-y" placeholder="e.g. Reinforced handles, carton marks, textile labels..." />
                 </Field>
               </div>
             </div>
