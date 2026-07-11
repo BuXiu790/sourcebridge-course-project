@@ -27,11 +27,18 @@ async function request(pathname = "/", init = {}) {
   );
 }
 
+async function builtSupabaseIsConfigured() {
+  const response = await request("/login");
+  const html = await response.text();
+  return !html.includes("Supabase configuration required");
+}
+
 test("server-renders the public SourceBridge routes", async () => {
   const routes = [
     ["/", "Source Smarter from China"],
+    ["/demo", "A complete sourcing workflow"],
     ["/login", "Sign in to SourceBridge"],
-    ["/signup", "Create your SourceBridge account"],
+    ["/signup", "Public registration is paused"],
     ["/forgot-password", "Reset your password"],
   ];
 
@@ -49,13 +56,23 @@ test("server-renders the public SourceBridge routes", async () => {
       assert.match(html, /href="\/#workflow"/);
       assert.match(html, /Prototype Service Targets/);
       assert.match(html, /not actual operating results/);
+    } else if (pathname === "/demo") {
+      assert.match(html, /illustrative data only/i);
+      assert.match(html, /not a real customer order/i);
+      assert.match(html, /Estimates only/);
+    } else if (pathname === "/login") {
+      assert.match(html, /Course demo accounts only/);
+      assert.doesNotMatch(html, /href="\/signup"/);
+    } else if (html.includes("Supabase configuration required")) {
+      assert.match(html, /No credentials have been guessed or embedded/);
     } else {
-      assert.match(html, /Supabase configuration required/);
+      assert.doesNotMatch(html, /Supabase is not configured/);
     }
   }
 });
 
-test("redirects protected pages to login when Supabase is not configured", async () => {
+test("redirects anonymous protected pages to login", async () => {
+  const configured = await builtSupabaseIsConfigured();
   const paths = [
     "/dashboard",
     "/rfqs/new",
@@ -74,21 +91,24 @@ test("redirects protected pages to login when Supabase is not configured", async
     const location = new URL(response.headers.get("location"));
     assert.equal(location.pathname, "/login");
     assert.equal(location.searchParams.get("next"), pathname);
-    assert.equal(location.searchParams.get("error"), "config");
+    assert.equal(location.searchParams.get("error"), configured ? null : "config");
     assert.match(response.headers.get("cache-control") ?? "", /no-store/);
   }
 });
 
-test("rejects protected API writes when Supabase is not configured", async () => {
+test("rejects anonymous protected API writes", async () => {
+  const configured = await builtSupabaseIsConfigured();
   const response = await request("/api/rfqs", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ productName: "Test" }),
   });
 
-  assert.equal(response.status, 503);
+  assert.equal(response.status, configured ? 401 : 503);
   assert.match(response.headers.get("cache-control") ?? "", /no-store/);
-  assert.deepEqual(await response.json(), { error: "Supabase is not configured." });
+  assert.deepEqual(await response.json(), {
+    error: configured ? "Authentication required." : "Supabase is not configured.",
+  });
 });
 
 test("removes starter preview code and metadata", async () => {

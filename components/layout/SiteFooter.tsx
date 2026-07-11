@@ -20,6 +20,9 @@ export function SiteFooter() {
             <Link className="hover:text-blue-700" href="/rfqs/new">
               New Sourcing Request
             </Link>
+            <Link className="hover:text-blue-700" href="/demo">
+              Public Course Demo
+            </Link>
           </div>
         </div>
         <div>
@@ -31,7 +34,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-slate-100 px-4 py-5 text-center text-xs leading-5 text-slate-500">
-        <p>© 2026 SourceBridge. Sourcing workflow prototype.</p>
+        <p>© 2026 SourceBridge. Course Release v1.0 · Frontend framework practice project.</p>
         <p className="mt-1">
           SourceBridge is an independent sourcing workflow prototype and is not affiliated with or endorsed by Amazon.
         </p>

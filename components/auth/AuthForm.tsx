@@ -208,7 +208,6 @@ export function AuthForm({
         </Button>
         <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-slate-600">
           {mode !== "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/login">Sign in</Link> : null}
-          {mode === "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/signup">Create account</Link> : null}
           {mode === "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/forgot-password">Forgot password?</Link> : null}
         </div>
       </div>

@@ -39,6 +39,9 @@ export function SiteHeader({ account }: { account?: HeaderAccount }) {
           <Link className="nav-link" href="/#capabilities">
             Capabilities
           </Link>
+          <Link className="nav-link" href="/demo">
+            Course Demo
+          </Link>
           <Link className="nav-link" href="/dashboard">
             Dashboard
           </Link>

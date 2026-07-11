@@ -140,6 +140,14 @@ export function SourcingRequestForm() {
     }
   };
 
+  const updateDeliveryDate = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setData((current) => ({ ...current, desiredDeliveryDate: value }));
+    if (errors.desiredDeliveryDate) {
+      setErrors((current) => ({ ...current, desiredDeliveryDate: undefined }));
+    }
+  };
+
   const fieldProps = (key: keyof SourcingFormData, hasHelp = false) => ({
     id: key,
     name: key,
@@ -418,7 +426,7 @@ export function SourcingRequestForm() {
                 </select>
               </Field>
               <Field id="desiredDeliveryDate" label="Desired delivery date" required error={errors.desiredDeliveryDate}>
-                <input {...fieldProps("desiredDeliveryDate")} required type="date" className="text-field" />
+                <input {...fieldProps("desiredDeliveryDate")} onInput={updateDeliveryDate} required type="date" className="text-field" />
               </Field>
               <Field id="sampleRequired" label="Sample required">
                 <select {...fieldProps("sampleRequired")} className="text-field"><option>Yes</option><option>No</option><option>Not sure</option></select>

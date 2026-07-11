@@ -32,6 +32,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# local secrets and test credentials
+.private/
+
 # vercel
 .vercel
 

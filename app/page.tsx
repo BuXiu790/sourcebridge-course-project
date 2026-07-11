@@ -85,8 +85,8 @@ export default function Home() {
                 <ButtonLink href="/rfqs/new" className="px-5" testId="hero-new-rfq">
                   Submit a Sourcing Request <span aria-hidden="true">→</span>
                 </ButtonLink>
-                <ButtonLink href="/dashboard" variant="secondary" className="px-5">
-                  Open Buyer Dashboard
+                <ButtonLink href="/demo" variant="secondary" className="px-5">
+                  View Public Course Demo
                 </ButtonLink>
               </div>
               <p className="mt-4 text-xs leading-5 text-slate-500">
@@ -214,6 +214,9 @@ export default function Home() {
             </h2>
             <ButtonLink href="/rfqs/new" className="mt-8 px-6">
               Submit a Sourcing Request <span aria-hidden="true">→</span>
+            </ButtonLink>
+            <ButtonLink href="/demo" variant="secondary" className="mt-3 px-6">
+              Explore the Read-only Demo
             </ButtonLink>
           </div>
         </section>

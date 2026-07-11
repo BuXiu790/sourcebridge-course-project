@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/database.types";
+import { getProtectedAccessDecision } from "@/lib/request-access";
 import { getSupabasePublicConfigOrNull } from "@/lib/supabase/config";
 
 const protectedPrefixes = [
@@ -39,10 +40,17 @@ function loginRedirect(request: NextRequest, reason?: string) {
 export async function updateSession(request: NextRequest) {
   const config = getSupabasePublicConfigOrNull();
   const protectedPath = isProtectedPath(request.nextUrl.pathname);
+  const apiPath = isApiPath(request.nextUrl.pathname);
 
   if (!config) {
-    if (!protectedPath) return NextResponse.next({ request });
-    if (isApiPath(request.nextUrl.pathname)) {
+    const decision = getProtectedAccessDecision({
+      authenticated: false,
+      configured: false,
+      isApi: apiPath,
+      isProtected: protectedPath,
+    });
+    if (decision === "allow") return NextResponse.next({ request });
+    if (decision === "api-unavailable") {
       return NextResponse.json(
         { error: "Supabase is not configured." },
         { status: 503, headers: { "Cache-Control": "private, no-store" } },
@@ -67,9 +75,15 @@ export async function updateSession(request: NextRequest) {
 
   const { data, error } = await supabase.auth.getClaims();
   const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
+  const decision = getProtectedAccessDecision({
+    authenticated: !error && Boolean(userId),
+    configured: true,
+    isApi: apiPath,
+    isProtected: protectedPath,
+  });
 
-  if (protectedPath && (error || !userId)) {
-    if (isApiPath(request.nextUrl.pathname)) {
+  if (decision !== "allow") {
+    if (decision === "api-unauthorized") {
       return NextResponse.json(
         { error: "Authentication required." },
         { status: 401, headers: { "Cache-Control": "private, no-store" } },

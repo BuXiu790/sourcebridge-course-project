@@ -43,10 +43,12 @@ test("migration forces buyer signup and protects staff-only operations", async (
 });
 
 test("application uses server authorization and keeps demo RFQs separate", async () => {
-  const [proxy, auth, signup, dashboard, newRfq, packageJson] = await Promise.all([
+  const [proxy, auth, authForm, signupPage, publicDemo, dashboard, newRfq, packageJson] = await Promise.all([
     readFile(new URL("../lib/supabase/proxy.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/auth.ts", import.meta.url), "utf8"),
     readFile(new URL("../components/auth/AuthForm.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/signup/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/demo/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/dashboard/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../components/rfq/SourcingRequestForm.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
@@ -58,7 +60,11 @@ test("application uses server authorization and keeps demo RFQs separate", async
   assert.match(proxy, /auth\.getClaims\(\)/);
   assert.match(auth, /requireRole/);
   assert.match(auth, /redirect\("\/dashboard\?error=forbidden"\)/);
-  assert.doesNotMatch(signup, /name=["']role["']/i);
+  assert.doesNotMatch(authForm, /name=["']role["']/i);
+  assert.doesNotMatch(authForm, /href=["']\/signup["']/i);
+  assert.match(signupPage, /Public registration is paused/);
+  assert.doesNotMatch(signupPage, /AuthForm/);
+  assert.match(publicDemo, /DemoRfqOverview/);
   assert.doesNotMatch(dashboard, /mock-data|DEMO_RFQS/);
   assert.match(newRfq, /fetch\("\/api\/rfqs"/);
   assert.match(packageJson, /@supabase\/ssr/);
