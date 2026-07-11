@@ -1,4 +1,5 @@
 import { getApiAuth } from "@/lib/auth";
+import { COURSE_RFQ_LIMIT, COURSE_RFQ_LIMIT_MESSAGE } from "@/lib/course-limits";
 import { validateSourcingRequest } from "@/lib/validate-sourcing-request";
 
 export async function POST(request: Request) {
@@ -14,6 +15,23 @@ export async function POST(request: Request) {
 
   const validated = validateSourcingRequest(body);
   if (!validated.ok) return Response.json({ error: validated.error }, { status: 400 });
+
+  if (result.auth.profile.role === "buyer") {
+    const { count, error: countError } = await result.auth.supabase
+      .from("rfqs")
+      .select("id", { count: "exact", head: true })
+      .eq("buyer_id", result.auth.user.id);
+
+    if (countError) {
+      return Response.json({ error: "The course RFQ allowance could not be checked." }, { status: 500 });
+    }
+    if ((count ?? 0) >= COURSE_RFQ_LIMIT) {
+      return Response.json(
+        { code: "COURSE_RFQ_LIMIT", error: COURSE_RFQ_LIMIT_MESSAGE, limit: COURSE_RFQ_LIMIT },
+        { status: 403 },
+      );
+    }
+  }
 
   const data = validated.data;
   const { data: rfq, error } = await result.auth.supabase
@@ -43,6 +61,12 @@ export async function POST(request: Request) {
     .select("id,rfq_number")
     .single();
 
+  if (error?.code === "P0001" && error.message.includes("Course demo limit reached")) {
+    return Response.json(
+      { code: "COURSE_RFQ_LIMIT", error: COURSE_RFQ_LIMIT_MESSAGE, limit: COURSE_RFQ_LIMIT },
+      { status: 403 },
+    );
+  }
   if (error || !rfq) {
     return Response.json({ error: "The sourcing request could not be saved." }, { status: 500 });
   }

@@ -38,8 +38,8 @@ test("server-renders the public SourceBridge routes", async () => {
     ["/", "Source Smarter from China"],
     ["/demo", "A complete sourcing workflow"],
     ["/login", "Sign in to SourceBridge"],
-    ["/signup", "Public registration is paused"],
-    ["/forgot-password", "Reset your password"],
+    ["/signup", "Create a Buyer account"],
+    ["/forgot-password", "Password recovery is unavailable"],
   ];
 
   for (const [pathname, expectedText] of routes) {
@@ -61,8 +61,18 @@ test("server-renders the public SourceBridge routes", async () => {
       assert.match(html, /not a real customer order/i);
       assert.match(html, /Estimates only/);
     } else if (pathname === "/login") {
-      assert.match(html, /Course demo accounts only/);
-      assert.doesNotMatch(html, /href="\/signup"/);
+      assert.match(html, /Course Release v1.1/);
+      assert.match(html, /href="\/signup"/);
+      assert.match(html, /Password recovery unavailable/);
+      assert.doesNotMatch(html, /href="\/forgot-password"/);
+    } else if (pathname === "/signup") {
+      assert.match(html, /Course demo registration/);
+      assert.match(html, /Email ownership is not verified/);
+      assert.match(html, /Do not reuse a password/);
+      assert.match(html, /Already have an account\? Sign in/);
+    } else if (pathname === "/forgot-password") {
+      assert.doesNotMatch(html, /Send reset email/);
+      assert.match(html, /No reset request will be submitted/);
     } else if (html.includes("Supabase configuration required")) {
       assert.match(html, /No credentials have been guessed or embedded/);
     } else {

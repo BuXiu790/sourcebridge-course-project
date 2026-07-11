@@ -17,9 +17,9 @@ export default async function LoginPage({
 
   return (
     <AuthShell
-      eyebrow="Course demo accounts only"
+      eyebrow="Course Release v1.1"
       title="Sign in to SourceBridge"
-      description="Use an instructor-approved course demo account to access private sourcing requests, comparable quotes, production milestones, and administration tools. Public registration is disabled for Course Release v1.0."
+      description="Sign in to your course demo Buyer workspace, or create a new Buyer account. Operator and Admin roles remain restricted to approved internal accounts."
     >
       <AuthForm
         mode="login"

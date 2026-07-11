@@ -26,10 +26,11 @@
 
 | 方法 | 路径 | 说明 | 返回/跳转 |
 | --- | --- | --- | --- |
+| POST | `/api/auth/signup` | 公开 Course Demo Buyer 注册；参数为 `{ email, password, confirmPassword, acceptedPrivacy }`，拒绝任何角色字段 | `201 { ok, redirectTo }`；400 校验/弱密码；403 注册关闭；409 已注册；429 限频；500/502/503 服务或配置错误 |
 | GET | `/auth/callback` | 用授权码交换 Supabase Session | 成功跳转安全 `next`；失败跳转登录错误提示 |
 | GET | `/auth/confirm` | 验证邮件 OTP/Token Hash | 成功跳转目标页面；失败跳转登录 |
 
-Course Release v1.0 的 `/signup` 不调用注册接口，只显示暂停说明。邮箱确认保持启用，待课程提交后配置自定义 SMTP 再开放公众注册。
+Course Release v1.1 的 `/signup` 调用服务端注册接口。数据库触发器固定创建 Buyer Profile，不读取客户端角色 metadata。课程版本暂时关闭邮箱确认并禁用密码恢复；商业化前必须配置自定义 SMTP 并重新开启邮箱确认。
 
 ## 4. 参数校验与异常处理
 

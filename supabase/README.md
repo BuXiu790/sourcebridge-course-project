@@ -1,7 +1,7 @@
 # SourceBridge Supabase setup
 
-1. Create a Supabase project and apply `migrations/202607110001_sourcebridge_phase2.sql`.
-2. Configure email/password authentication and require email confirmation.
+1. Create a Supabase project and apply `migrations/202607110001_sourcebridge_phase2.sql`, followed by `migrations/202607110002_course_v1_1_registration.sql`.
+2. For Course Release v1.1, enable email/password signups, disable anonymous sign-ins, and temporarily disable email confirmation so registration creates a session without SMTP.
 3. Add local and production callback URLs to the Supabase Auth redirect allow list:
    - `http://localhost:3000/auth/callback`
    - `https://YOUR_PRIVATE_SITE_HOST/auth/callback`
@@ -21,6 +21,17 @@ Reset password:
 ```
 
 Keep the Site URL and redirect allow list aligned with the environment being tested.
+
+## Course Release v1.1 registration mode
+
+- Public `signUp()` users are always assigned the `buyer` role by `private.handle_new_user()`.
+- Role-like Auth metadata is ignored; Buyers cannot update `profiles.role` or call the Admin role RPC.
+- Buyers may update only safe fields on their own Profile.
+- A database trigger limits each non-staff Buyer to five RFQs, including concurrent requests.
+- Supabase's default signup/sign-in rate limit remains enabled.
+- Password recovery is disabled in the application while custom SMTP is unavailable.
+
+This is a course demo configuration. Before a commercial release, configure custom SMTP, re-enable email confirmation, verify recovery delivery, and review abuse controls.
 
 ## Bootstrap the first admin
 

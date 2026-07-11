@@ -8,12 +8,11 @@ import { ErrorAlert } from "@/components/ui/States";
 import type { SupabasePublicConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 
-type AuthMode = "login" | "signup" | "forgot" | "reset";
+type AuthMode = "login" | "signup" | "reset";
 
 const submitLabels: Record<AuthMode, string> = {
   login: "Sign in",
   signup: "Create buyer account",
-  forgot: "Send reset email",
   reset: "Update password",
 };
 
@@ -30,15 +29,16 @@ export function AuthForm({
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [showPasswords, setShowPasswords] = useState(false);
   const [error, setError] = useState<string>();
   const [message, setMessage] = useState(initialMessage);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const needsEmail = mode !== "reset";
-  const needsPassword = mode !== "forgot";
+  const needsPassword = true;
   const needsConfirmation = mode === "signup" || mode === "reset";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -63,45 +63,45 @@ export function AuthForm({
       setError("Passwords do not match.");
       return;
     }
+    if (mode === "signup" && !acceptedPrivacy) {
+      setError("Agree to the course demo privacy notice before creating an account.");
+      return;
+    }
 
     setIsSubmitting(true);
-    const supabase = createClient(config);
 
     try {
+      if (mode === "signup") {
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            email: normalizedEmail,
+            password,
+            confirmPassword,
+            acceptedPrivacy,
+          }),
+        });
+        const result: unknown = await response.json().catch(() => null);
+        const responseError =
+          typeof result === "object" && result !== null && "error" in result && typeof result.error === "string"
+            ? result.error
+            : "The account could not be created.";
+        if (!response.ok) throw new Error(responseError);
+
+        setMessage("Buyer account created. Opening your dashboard...");
+        router.replace("/dashboard");
+        router.refresh();
+        return;
+      }
+
+      const supabase = createClient(config);
       if (mode === "login") {
         const { error: authError } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
         if (authError) throw authError;
         router.replace(next);
         router.refresh();
         return;
-      }
-
-      if (mode === "signup") {
-        const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
-        const { data, error: authError } = await supabase.auth.signUp({
-          email: normalizedEmail,
-          password,
-          options: {
-            emailRedirectTo: redirectTo,
-            data: fullName.trim() ? { full_name: fullName.trim() } : {},
-          },
-        });
-        if (authError) throw authError;
-        if (data.session) {
-          router.replace(next);
-          router.refresh();
-          return;
-        }
-        setMessage("Check your email to verify your address, then return to sign in.");
-      }
-
-      if (mode === "forgot") {
-        const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
-        const { error: authError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-          redirectTo,
-        });
-        if (authError) throw authError;
-        setMessage("If an account exists for this email, a password reset link has been sent.");
       }
 
       if (mode === "reset") {
@@ -114,7 +114,13 @@ export function AuthForm({
         }, 700);
       }
     } catch (authError) {
-      setError(authError instanceof Error ? authError.message : "Authentication could not be completed.");
+      setError(
+        authError instanceof TypeError
+          ? "A network error interrupted the request. Check your connection and try again."
+          : authError instanceof Error
+            ? authError.message
+            : "Authentication could not be completed.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -136,20 +142,6 @@ export function AuthForm({
           </div>
         ) : null}
 
-        {mode === "signup" ? (
-          <div>
-            <label htmlFor="full-name" className="field-label">Full name</label>
-            <input
-              id="full-name"
-              autoComplete="name"
-              className="text-field"
-              value={fullName}
-              onChange={(event) => setFullName(event.target.value)}
-              placeholder="Alex Morgan"
-            />
-          </div>
-        ) : null}
-
         {needsEmail ? (
           <div>
             <label htmlFor="email" className="field-label">Email address</label>
@@ -167,20 +159,28 @@ export function AuthForm({
         ) : null}
 
         {needsPassword ? (
-          <div>
+          <div className="relative">
             <label htmlFor="password" className="field-label">
               {mode === "reset" ? "New password" : "Password"}
             </label>
             <input
               id="password"
-              type="password"
+              type={showPasswords ? "text" : "password"}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
               required
               minLength={8}
-              className="text-field"
+              className="text-field pr-20"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
+            <button
+              type="button"
+              className="absolute right-3 top-10 rounded px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              aria-pressed={showPasswords}
+              onClick={() => setShowPasswords((visible) => !visible)}
+            >
+              {showPasswords ? "Hide" : "Show"}
+            </button>
             <p className="field-help">Use at least 8 characters.</p>
           </div>
         ) : null}
@@ -190,7 +190,7 @@ export function AuthForm({
             <label htmlFor="confirm-password" className="field-label">Confirm password</label>
             <input
               id="confirm-password"
-              type="password"
+              type={showPasswords ? "text" : "password"}
               autoComplete="new-password"
               required
               minLength={8}
@@ -200,6 +200,23 @@ export function AuthForm({
             />
           </div>
         ) : null}
+
+        {mode === "signup" ? (
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                checked={acceptedPrivacy}
+                onChange={(event) => setAcceptedPrivacy(event.target.checked)}
+                required
+              />
+              <span>
+                I agree to the course demo privacy notice and understand that this account must not be used for real purchasing secrets, identity documents, payment information, or sensitive files.
+              </span>
+            </label>
+          </div>
+        ) : null}
       </div>
 
       <div className="border-t border-slate-200 bg-slate-50 px-5 py-4 sm:px-7">
@@ -207,8 +224,9 @@ export function AuthForm({
           {isSubmitting ? "Please wait…" : submitLabels[mode]}
         </Button>
         <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-slate-600">
-          {mode !== "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/login">Sign in</Link> : null}
-          {mode === "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/forgot-password">Forgot password?</Link> : null}
+          {mode !== "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/login">Already have an account? Sign in</Link> : null}
+          {mode === "login" ? <Link className="font-semibold text-blue-700 hover:underline" href="/signup">Create account</Link> : null}
+          {mode === "login" ? <span className="text-slate-500">Password recovery unavailable</span> : null}
         </div>
       </div>
     </form>

@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Public Course Demo",
-  description: "Read-only SourceBridge Course Release v1.0 RFQ workflow demo.",
+  description: "Read-only SourceBridge Course Release v1.1 RFQ workflow demo.",
 };
 
 export default function DemoPage() {
