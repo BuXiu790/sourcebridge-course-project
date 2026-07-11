@@ -1,20 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { SupabasePublicConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton({ config }: { config: SupabasePublicConfig }) {
-  const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   async function signOut() {
     setIsSigningOut(true);
     const supabase = createClient(config);
     await supabase.auth.signOut({ scope: "local" });
-    router.replace("/login");
-    router.refresh();
+    window.location.assign("/login");
   }
 
   return (

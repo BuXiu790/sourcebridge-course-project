@@ -90,8 +90,7 @@ export function AuthForm({
         if (!response.ok) throw new Error(responseError);
 
         setMessage("Buyer account created. Opening your dashboard...");
-        router.replace("/dashboard");
-        router.refresh();
+        window.location.assign("/dashboard");
         return;
       }
 

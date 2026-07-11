@@ -52,10 +52,11 @@ test("migration forces buyer signup and protects staff-only operations", async (
 });
 
 test("application uses server authorization and keeps demo RFQs separate", async () => {
-  const [proxy, auth, authForm, signupPage, signupRoute, publicDemo, dashboard, newRfq, rfqRoute, packageJson] = await Promise.all([
+  const [proxy, auth, authForm, signOutButton, signupPage, signupRoute, publicDemo, dashboard, newRfq, rfqRoute, packageJson] = await Promise.all([
     readFile(new URL("../lib/supabase/proxy.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/auth.ts", import.meta.url), "utf8"),
     readFile(new URL("../components/auth/AuthForm.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/auth/SignOutButton.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/signup/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/auth/signup/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/demo/page.tsx", import.meta.url), "utf8"),
@@ -74,6 +75,8 @@ test("application uses server authorization and keeps demo RFQs separate", async
   assert.doesNotMatch(authForm, /name=["']role["']/i);
   assert.match(authForm, /href=["']\/signup["']/i);
   assert.match(authForm, /acceptedPrivacy/);
+  assert.match(authForm, /window\.location\.assign\("\/dashboard"\)/);
+  assert.match(signOutButton, /window\.location\.assign\("\/login"\)/);
   assert.match(signupPage, /Course demo registration/);
   assert.match(signupPage, /AuthForm/);
   assert.match(signupRoute, /supabase\.auth\.signUp\(\{[\s\S]*email:[\s\S]*password[\s\S]*\}\)/i);
