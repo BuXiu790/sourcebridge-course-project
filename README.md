@@ -127,4 +127,3 @@ npm run test:signup-live
 - [API 接口文档](docs/04-API接口文档.md)
 - [部署指南](docs/05-部署指南.md)
 - [测试报告](docs/06-测试报告.md)
-- [演示与答辩](docs/07-演示与答辩.md)
