@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ErrorAlert } from "@/components/ui/States";
@@ -27,7 +26,6 @@ export function AuthForm({
   next?: string;
   initialMessage?: string;
 }) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -98,8 +96,7 @@ export function AuthForm({
       if (mode === "login") {
         const { error: authError } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
         if (authError) throw authError;
-        router.replace(next);
-        router.refresh();
+        window.location.assign(next);
         return;
       }
 
@@ -108,8 +105,7 @@ export function AuthForm({
         if (authError) throw authError;
         setMessage("Password updated. Redirecting to your dashboard…");
         window.setTimeout(() => {
-          router.replace("/dashboard");
-          router.refresh();
+          window.location.assign("/dashboard");
         }, 700);
       }
     } catch (authError) {

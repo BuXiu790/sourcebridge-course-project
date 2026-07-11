@@ -76,6 +76,7 @@ test("application uses server authorization and keeps demo RFQs separate", async
   assert.match(authForm, /href=["']\/signup["']/i);
   assert.match(authForm, /acceptedPrivacy/);
   assert.match(authForm, /window\.location\.assign\("\/dashboard"\)/);
+  assert.match(authForm, /window\.location\.assign\(next\)/);
   assert.match(signOutButton, /window\.location\.assign\("\/login"\)/);
   assert.match(signupPage, /Course demo registration/);
   assert.match(signupPage, /AuthForm/);
